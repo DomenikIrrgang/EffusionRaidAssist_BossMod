@@ -1,0 +1,9 @@
+<Ui xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+    <Script file="src/Color.lua"/>
+    <Script file="src/Timer.lua"/>
+    <Script file="src/DungeonModuleManager.lua"/>
+    <Script file="src/TimerManager.lua"/>
+    <Script file="src/DungeonModule.lua"/>
+    <Script file="src/EffusionRaidAssistBossMod.lua"/>
+    <Script file="src/dungeons/Stockades.lua"/>
+</Ui>

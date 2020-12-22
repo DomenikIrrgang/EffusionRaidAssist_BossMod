@@ -1,0 +1,8 @@
+## Interface: 90002
+## Author: Suu
+## Title: EffusionRaidAssist [|c0000FF00BossMod|r]
+## Notes: BossMod for EffusionRaidAssist.
+## Version: 0.1
+## Dependency: EffusionRaidAssist
+
+source.xml

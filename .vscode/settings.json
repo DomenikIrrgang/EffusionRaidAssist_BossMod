@@ -1,0 +1,11 @@
+{
+    "Lua.diagnostics.globals": [
+        "CreateClass",
+        "InterpolateValue",
+        "EffusionRaidAssist",
+        "UIParent",
+        "GetTime",
+        "GetSpellTexture",
+        "BindCallback"
+    ]
+}
