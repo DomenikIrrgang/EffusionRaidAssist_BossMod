@@ -26,7 +26,7 @@ function BossModDungeonModuleManager:LeaveDungeon(dungeon)
     local modules = self:GetModulesByInstanceId(dungeon.instanceId)
     if (#modules > 0) then
         for _, module in pairs(modules) do
-            module:Deactivated()
+            module:Deactivate()
             self.activeModules[module.name] = nil
         end
         EffusionRaidAssistBossMod:ChatMessage("Deactivated Module(s) for Dungeon:", dungeon.name)

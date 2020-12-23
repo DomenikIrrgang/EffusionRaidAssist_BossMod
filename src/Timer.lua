@@ -3,7 +3,8 @@ EffusionRaidAssistBossModTimer = CreateClass()
 function EffusionRaidAssistBossModTimer.new(name, parent)
     local self = setmetatable({}, EffusionRaidAssistBossModTimer)
     self.frame = EffusionRaidAssist.FramePool:GetFrame("StatusBar")
-    self.frame:SetWidth(200)
+    self.frame:SetParent(parent)
+    self.frame:SetWidth(250)
     self.frame:SetHeight(20)
     self.frame:SetStatusBarTexture("Interface\\TARGETINGFRAME\\UI-StatusBar")
     self:SetMaximumValue(100)
@@ -11,45 +12,38 @@ function EffusionRaidAssistBossModTimer.new(name, parent)
     self.colorFull = EffusionRaidAssistColor(0, 0.7, 1, 1)
     self.colorEmpty = EffusionRaidAssistColor(1, 0, 0, 1)
 
-    if (self.frame.background == nil) then
-        self.frame.background = self.frame:CreateTexture(nil, "BACKGROUND")
-        self.frame.background:SetTexture("Interface\\TARGETINGFRAME\\UI-StatusBar")
-        self.frame.background:SetAllPoints(true)
-        self.frame.background:SetVertexColor(1, 1, 1, 0.2)
-    end
+    self.background = EffusionRaidAssist.FramePool:GetTexture("BACKGROUND")
+    self.background:SetParent(self.frame)
+    self.background:SetTexture("Interface\\TARGETINGFRAME\\UI-StatusBar")
+    self.background:SetAllPoints(true)
+    self.background:SetVertexColor(1, 1, 1, 0.2)
 
-    if (self.frame.icon == nil) then
-        self.frame.icon = self.frame:CreateTexture(nil, "BACKGROUND")
-        self.frame.icon:SetTexture(GetSpellTexture("Shield Slam"))
-        self.frame.icon:SetWidth(20)
-        self.frame.icon:SetHeight(20)
-        self.frame.icon:SetPoint("RIGHT", self.frame, "LEFT", 0, 0)
-    end
+    self.icon = EffusionRaidAssist.FramePool:GetTexture("BACKGROUND")
+    self.icon:SetParent(self.frame)
+    self.icon:SetWidth(20)
+    self.icon:SetHeight(20)
+    self.icon:SetPoint("RIGHT", self.frame, "LEFT", 0, 0)
 
-    if (self.frame.text == nil) then
-        self.frame.text = self.frame:CreateFontString(nil, "OVERLAY")
-        self.frame.text:SetPoint("LEFT", self.frame, "LEFT", 0, 0)
-        self.frame.text:SetFont("Fonts\\FRIZQT__.TTF", 14, "OUTLINE")
-        self.frame.text:SetJustifyH("LEFT")
-        self.frame.text:SetShadowOffset(1, -1)
-        self.frame.text:SetTextColor(1, 1, 1)
-    end
+    self.text = self.frame:CreateFontString(nil, "OVERLAY")
+    self.text:SetPoint("LEFT", self.frame, "LEFT", 2, 0)
+    self.text:SetFont("Fonts\\FRIZQT__.TTF", 14, "OUTLINE")
+    self.text:SetJustifyH("LEFT")
+    self.text:SetShadowOffset(1, -1)
+    self.text:SetTextColor(1, 1, 1)
 
-    if (self.frame.time == nil) then
-        self.frame.time = self.frame:CreateFontString(nil, "OVERLAY")
-        self.frame.time:SetPoint("RIGHT", self.frame, "RIGHT", 0, 0)
-        self.frame.time:SetFont("Fonts\\FRIZQT__.TTF", 14, "OUTLINE")
-        self.frame.time:SetJustifyH("RIGHT")
-        self.frame.time:SetShadowOffset(1, -1)
-        self.frame.time:SetTextColor(1, 1, 1)
-    end
+    self.time = self.frame:CreateFontString(nil, "OVERLAY")
+    self.time:SetPoint("RIGHT", self.frame, "RIGHT", 0, 0)
+    self.time:SetFont("Fonts\\FRIZQT__.TTF", 14, "OUTLINE")
+    self.time:SetJustifyH("RIGHT")
+    self.time:SetShadowOffset(1, -1)
+    self.time:SetTextColor(1, 1, 1)
 
     return self
 end
 
 function EffusionRaidAssistBossModTimer:UpdateTime()
     if (self:GetRemainingTime() <= 0) then
-        self.frame:SetScript("OnUpdate", nil)
+        self:End()
     else
         self:SetRemainingTime(self:GetPercentage() * 100)
         if (self.updateCallback) then
@@ -64,13 +58,29 @@ end
 
 function EffusionRaidAssistBossModTimer:End()
     self:Stop()
+    EffusionRaidAssist.EventDispatcher:DispatchEvent(EffusionRaidAssist.CustomEvents["TimerEnded"], self)
     if (self.endCallback) then
         self.endCallback()
     end
+    EffusionRaidAssist.FramePool:Release(self)
+end
+
+function EffusionRaidAssistBossModTimer:Abort()
+    self:Stop()
+    EffusionRaidAssist.EventDispatcher:DispatchEvent(EffusionRaidAssist.CustomEvents["TimerAborted"], self)
+    EffusionRaidAssist.FramePool:Release(self)
+end
+
+function EffusionRaidAssistBossModTimer:Hide()
+    self.frame:Hide()
+end
+
+function EffusionRaidAssistBossModTimer:Show()
+    self.frame:Show()
 end
 
 function EffusionRaidAssistBossModTimer:Release()
-    EffusionRaidAssist.FramePool:ReleaseFrame(self.frame)
+    self.frame:ClearAllPoints()
     self.updateCallback = nil
     self.endCallback = nil
     self.startTime = nil
@@ -82,12 +92,17 @@ function EffusionRaidAssistBossModTimer:GetName()
     return self.name
 end
 
+function EffusionRaidAssistBossModTimer:GetObjectType()
+    return "BossModTimer"
+end
+
 function EffusionRaidAssistBossModTimer:Start(time)
     self.startTime = GetTime()
     self.endTime = GetTime() + time
     self.duration = time
     self:UpdateTime()
     self.frame:SetScript("OnUpdate", BindCallback(self, self.UpdateTime))
+    EffusionRaidAssist.EventDispatcher:DispatchEvent(EffusionRaidAssist.CustomEvents["TimerStarted"], self)
 end
 
 function EffusionRaidAssistBossModTimer:ResetTime()
@@ -136,14 +151,14 @@ function EffusionRaidAssistBossModTimer:SetPoint(anchor, relativeFrame, relative
 end
 
 function EffusionRaidAssistBossModTimer:SetText(text)
-    if (self.frame.text) then
-        self.frame.text:SetText(text)
-    end
+    self.text:SetText(text)
 end
 
 function EffusionRaidAssistBossModTimer:SetTimeText(time)
-    if (self.frame.time) then
-        self.frame.time:SetText(string.format("%.0f", time))
+    if (self:GetRemainingTime() < 10) then
+        self.time:SetText(string.format("%.1f", time))
+    else
+        self.time:SetText(string.format("%.0f", time))
     end
 end
 
@@ -156,6 +171,6 @@ function EffusionRaidAssistBossModTimer:SetUpdateCallback(callback)
 end
 
 function EffusionRaidAssistBossModTimer:SetIcon(texture)
-    self.frame.icon:SetTexture(texture)
+    self.icon:SetTexture(texture)
 end
 

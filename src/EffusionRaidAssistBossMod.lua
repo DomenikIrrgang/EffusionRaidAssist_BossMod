@@ -2,10 +2,14 @@ EffusionRaidAssistBossMod = EffusionRaidAssist.ModuleManager:NewModule("BossMod"
 
 EffusionRaidAssistBossMod.DungeonModuleManager = BossModDungeonModuleManager()
 
+EffusionRaidAssist.CustomEvents["TimerStarted"] = "BOSSMOD_TIMER_STARTED" -- (timer)
+EffusionRaidAssist.CustomEvents["TimerEnded"] = "BOSSMOD_TIMER_ENDED" -- (timer)
+EffusionRaidAssist.CustomEvents["TimerAborted"] = "BOSSMOD_TIMER_ABORTED" -- (timer)
+
+
 function EffusionRaidAssistBossMod:OnModuleInitialize()
     EffusionRaidAssist.FramePool:RegisterCustomType("BossModTimer", EffusionRaidAssistBossModTimer)
     self.TimerManager = BossModTimerManager()
-    self.TimerManager:StartTimer()
 end
 
 function EffusionRaidAssistBossMod:OnModuleUninitialize()
@@ -24,6 +28,7 @@ function EffusionRaidAssistBossMod:OnDisable()
     if (EffusionRaidAssist.DungeonManager:IsInDungeon()) then
         self.DungeonModuleManager:LeaveDungeon(EffusionRaidAssist.DungeonManager:GetDungeonInfo())
     end
+    self.TimerManager:Clear()
 end
 
 function EffusionRaidAssistBossMod:NewDungeonModule(name, instanceId)
@@ -32,16 +37,12 @@ end
 
 function EffusionRaidAssistBossMod:GetOptions()
     return {
-        test2 = {
+        toggle_anchor = {
             order = 1,
-            type = "toggle",
-            name = "Test Option",
-            get = function()
-                return true
-            end,
-            set = function(_, value)
-           
-            end,
+            type = "execute",
+            name = "Toggle Anchor",
+            func = BindCallback(self.TimerManager, self.TimerManager.ToggleAnchor),
+            width = "full"
         }
     }
 end

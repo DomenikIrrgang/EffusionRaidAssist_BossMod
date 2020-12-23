@@ -6,6 +6,7 @@
         "UIParent",
         "GetTime",
         "GetSpellTexture",
-        "BindCallback"
+        "BindCallback",
+        "GetSpellInfo"
     ]
 }
