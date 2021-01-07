@@ -4,13 +4,9 @@ function EffusionRaidAssistBossModTimer.new(name, parent)
     local self = setmetatable({}, EffusionRaidAssistBossModTimer)
     self.frame = EffusionRaidAssist.FramePool:GetFrame("StatusBar")
     self.frame:SetParent(parent)
-    self.frame:SetWidth(250)
-    self.frame:SetHeight(20)
-    self.frame:SetStatusBarTexture("Interface\\TARGETINGFRAME\\UI-StatusBar")
     self:SetMaximumValue(100)
     self.name = name
-    self.colorFull = EffusionRaidAssistColor(0, 0.7, 1, 1)
-    self.colorEmpty = EffusionRaidAssistColor(1, 0, 0, 1)
+    self.active = false
 
     self.background = EffusionRaidAssist.FramePool:GetTexture("BACKGROUND")
     self.background:SetParent(self.frame)
@@ -37,8 +33,43 @@ function EffusionRaidAssistBossModTimer.new(name, parent)
     self.time:SetJustifyH("RIGHT")
     self.time:SetShadowOffset(1, -1)
     self.time:SetTextColor(1, 1, 1)
-
+    self:Init()
+    EffusionRaidAssist.EventDispatcher:AddEventCallback(EffusionRaidAssist.CustomEvents.ProfileChanged, self, self.Init)
+    EffusionRaidAssistBossMod:RegisterDataCallback("timer.colorFull", BindCallback(self, self.UpdateBarColor))
+    EffusionRaidAssistBossMod:RegisterDataCallback("timer.colorEmpty", BindCallback(self, self.UpdateBarColor))
+    EffusionRaidAssistBossMod:RegisterDataCallback("timer.width", BindCallback(self, self.SetWidth))
+    EffusionRaidAssistBossMod:RegisterDataCallback("timer.height", BindCallback(self, self.SetHeight))
     return self
+end
+
+function EffusionRaidAssistBossModTimer:Init()
+    self.barColor = EffusionRaidAssistColor(1, 1, 1, 1)
+    if (self:IsActive()) then
+        self:UpdateBarColor()
+    else
+        self.barColor:Interpolate(EffusionRaidAssistBossMod:GetData().timer.colorEmpty, EffusionRaidAssistBossMod:GetData().timer.colorFull, 1)
+    end
+    self.frame:SetStatusBarTexture("Interface\\TARGETINGFRAME\\UI-StatusBar")
+    self:SetWidth(EffusionRaidAssistBossMod:GetData().timer.width)
+    self:SetHeight(EffusionRaidAssistBossMod:GetData().timer.height)
+end
+
+function EffusionRaidAssistBossModTimer:SetWidth(width)
+    self.frame:SetWidth(width)
+end
+
+function EffusionRaidAssistBossModTimer:SetHeight(height)
+    self.frame:SetHeight(height)
+    self.icon:SetHeight(height)
+    self.icon:SetWidth(height)
+end
+
+function EffusionRaidAssistBossModTimer:GetWidth()
+    return self.frame:GetWidth()
+end
+
+function EffusionRaidAssistBossModTimer:GetHeight()
+    return self.frame:GetHeight()
 end
 
 function EffusionRaidAssistBossModTimer:UpdateTime()
@@ -53,6 +84,7 @@ function EffusionRaidAssistBossModTimer:UpdateTime()
 end
 
 function EffusionRaidAssistBossModTimer:Stop()
+    self.active = false
     self.frame:SetScript("OnUpdate", nil)
 end
 
@@ -101,6 +133,7 @@ function EffusionRaidAssistBossModTimer:Start(time)
     self.endTime = GetTime() + time
     self.duration = time
     self:UpdateTime()
+    self.active = true
     self.frame:SetScript("OnUpdate", BindCallback(self, self.UpdateTime))
     EffusionRaidAssist.EventDispatcher:DispatchEvent(EffusionRaidAssist.CustomEvents["TimerStarted"], self)
 end
@@ -125,8 +158,13 @@ end
 
 function EffusionRaidAssistBossModTimer:SetRemainingTime(value)
     self.frame:SetValue(value)
-    self:SetBarColor(self.colorEmpty:Interpolate(self.colorFull, self:GetPercentage()))
+    self:UpdateBarColor()
     self:SetTimeText(self:GetRemainingTime())
+end
+
+function EffusionRaidAssistBossModTimer:UpdateBarColor()
+    self.barColor:Interpolate(EffusionRaidAssistBossMod:GetData().timer.colorEmpty, EffusionRaidAssistBossMod:GetData().timer.colorFull, self:GetPercentage())
+    self:SetBarColor(self.barColor)
 end
 
 function EffusionRaidAssistBossModTimer:GetRemainingTime()
@@ -174,3 +212,6 @@ function EffusionRaidAssistBossModTimer:SetIcon(texture)
     self.icon:SetTexture(texture)
 end
 
+function EffusionRaidAssistBossModTimer:IsActive()
+    return self.active
+end

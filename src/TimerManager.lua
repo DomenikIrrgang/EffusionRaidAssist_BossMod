@@ -7,6 +7,8 @@ function BossModTimerManager.new()
     EffusionRaidAssistBossMod:AddEventCallback(EffusionRaidAssist.CustomEvents.TimerStarted, self, self.TimerStarted)
     EffusionRaidAssistBossMod:AddEventCallback(EffusionRaidAssist.CustomEvents.TimerEnded, self, self.TimerEnded)
     EffusionRaidAssistBossMod:AddEventCallback(EffusionRaidAssist.CustomEvents.TimerAborted, self, self.TimerEnded)
+    EffusionRaidAssistBossMod:RegisterDataCallback("timer.width", BindCallback(self, self.SetAnchorWidth))
+    EffusionRaidAssistBossMod:RegisterDataCallback("timer.height", BindCallback(self, self.SetAnchorHeight))
     return self
 end
 
@@ -62,12 +64,20 @@ function BossModTimerManager:UpdateTimerPositions()
     end
 end
 
+function BossModTimerManager:SetAnchorWidth(width)
+    self.anchor:SetWidth(width)
+end
+
+function BossModTimerManager:SetAnchorHeight(height)
+    self.anchor:SetHeight(height)
+end
+
 function BossModTimerManager:CreateTimerAnchor()
     local anchor = EffusionRaidAssist.FramePool:GetFrame("Frame")
     anchor:SetParent(UIParent)
     anchor:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-    anchor:SetWidth(250)
-    anchor:SetHeight(20)
+    anchor:SetWidth(EffusionRaidAssistBossMod:GetData("timer.width"))
+    anchor:SetHeight(EffusionRaidAssistBossMod:GetData("timer.height"))
     anchor:SetMovable(true)
     anchor:SetScript("OnMouseDown", function()
         if (anchor:IsShown()) then
