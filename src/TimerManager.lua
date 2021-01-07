@@ -7,6 +7,7 @@ function BossModTimerManager.new()
     EffusionRaidAssistBossMod:AddEventCallback(EffusionRaidAssist.CustomEvents.TimerStarted, self, self.TimerStarted)
     EffusionRaidAssistBossMod:AddEventCallback(EffusionRaidAssist.CustomEvents.TimerEnded, self, self.TimerEnded)
     EffusionRaidAssistBossMod:AddEventCallback(EffusionRaidAssist.CustomEvents.TimerAborted, self, self.TimerEnded)
+    EffusionRaidAssistBossMod:AddEventCallback(EffusionRaidAssist.CustomEvents.ProfileChanged, self, self.InitAnchor)
     EffusionRaidAssistBossMod:RegisterDataCallback("timer.width", BindCallback(self, self.SetAnchorWidth))
     EffusionRaidAssistBossMod:RegisterDataCallback("timer.height", BindCallback(self, self.SetAnchorHeight))
     return self
@@ -63,6 +64,12 @@ function BossModTimerManager:UpdateTimerPositions()
         previousTimer = timer
     end
 end
+
+function BossModTimerManager:InitAnchor()
+    self.anchor:SetHeight(EffusionRaidAssistBossMod:GetData("timer.height"))
+    self.anchor:SetWidth(EffusionRaidAssistBossMod:GetData("timer.width"))
+end
+
 
 function BossModTimerManager:SetAnchorWidth(width)
     self.anchor:SetWidth(width)
