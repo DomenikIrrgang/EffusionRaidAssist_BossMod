@@ -3,7 +3,8 @@ EffusionRaidAssistBossMod = EffusionRaidAssist.ModuleManager:NewModule("BossMod"
 EffusionRaidAssistBossMod.DungeonModuleManager = BossModDungeonModuleManager()
 
 function EffusionRaidAssistBossMod:OnModuleInitialize()
-    EffusionRaidAssistBossMod.TimerManager = BossModTimerManager()
+    self.TimerManager = BossModTimerManager()
+    self.NamePlateTimerManager = BossModNamePlateTimerManager()
     EffusionRaidAssist.FramePool:RegisterCustomType("BossModTimer", EffusionRaidAssistBossModTimer)
 end
 
@@ -24,6 +25,7 @@ function EffusionRaidAssistBossMod:OnDisable()
         self.DungeonModuleManager:LeaveDungeon(EffusionRaidAssist.DungeonManager:GetDungeonInfo())
     end
     self.TimerManager:Clear()
+    self.NamePlateTimerManager:Clear()
 end
 
 function EffusionRaidAssistBossMod:NewDungeonModule(name, instanceId)

@@ -34,6 +34,7 @@ function EffusionRaidAssistBossModTimer.new(name, parent)
     self.time:SetShadowOffset(1, -1)
     self.time:SetTextColor(1, 1, 1)
     self:Init()
+
     EffusionRaidAssist.EventDispatcher:AddEventCallback(EffusionRaidAssist.CustomEvents.ProfileChanged, self, self.Init)
     EffusionRaidAssistBossMod:RegisterDataCallback("timer.colorFull", BindCallback(self, self.UpdateBarColor))
     EffusionRaidAssistBossMod:RegisterDataCallback("timer.colorEmpty", BindCallback(self, self.UpdateBarColor))
@@ -85,6 +86,7 @@ end
 
 function EffusionRaidAssistBossModTimer:Stop()
     self.active = false
+    self:Hide()
     self.frame:SetScript("OnUpdate", nil)
 end
 
@@ -135,6 +137,7 @@ function EffusionRaidAssistBossModTimer:Start(time)
     self:UpdateTime()
     self.active = true
     self.frame:SetScript("OnUpdate", BindCallback(self, self.UpdateTime))
+    self:Show()
     EffusionRaidAssist.EventDispatcher:DispatchEvent(EffusionRaidAssist.CustomEvents["TimerStarted"], self)
 end
 

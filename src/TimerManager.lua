@@ -19,6 +19,9 @@ function BossModTimerManager:StartTimer(time, text, icon, specialIcon, callback)
     timer:SetText(text)
     timer:SetEndCallback(callback)
     timer:Start(time)
+    self.timers[timer:GetName()] = timer
+    self:UpdateTimerPositions()
+    return timer
 end
 
 function BossModTimerManager:StartTimerForSpell(time, spellId, text, specialIcon, callback)
@@ -32,14 +35,11 @@ function BossModTimerManager:Clear()
 end
 
 function BossModTimerManager:TimerStarted(timer)
-    self.timers[timer:GetName()] = timer
-    timer:Show()
     self:UpdateTimerPositions()
 end
 
 function BossModTimerManager:TimerEnded(timer)
     self.timers[timer:GetName()] = nil
-    timer:Hide()
     self:UpdateTimerPositions()
 end
 

@@ -4,6 +4,7 @@
     <Script file="src/Timer.lua"/>
     <Script file="src/DungeonModuleManager.lua"/>
     <Script file="src/TimerManager.lua"/>
+    <Script file="src/NamePlateTimerManager.lua"/>
     <Script file="src/DungeonModule.lua"/>
     <Script file="src/EffusionRaidAssistBossMod.lua"/>
     <Script file="src/dungeons/Stockades.lua"/>
