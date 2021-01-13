@@ -6,6 +6,7 @@ function EffusionRaidAssistBossMod:OnModuleInitialize()
     self.TimerManager = BossModTimerManager()
     self.NamePlateTimerManager = BossModNamePlateTimerManager()
     EffusionRaidAssist.FramePool:RegisterCustomType("BossModTimer", EffusionRaidAssistBossModTimer)
+    self.DungeonModuleManager:Init()
 end
 
 function EffusionRaidAssistBossMod:OnModuleUninitialize()

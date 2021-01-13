@@ -9,6 +9,12 @@ function BossModDungeonModuleManager.new()
     return self
 end
 
+function BossModDungeonModuleManager:Init()
+    for _, module in pairs(self.modules) do
+        module:Init()
+    end
+end
+
 function BossModDungeonModuleManager:EnterDungeon(dungeon)
     local modules = self:GetModulesByInstanceId(dungeon.instanceId)
     if (#modules > 0) then
