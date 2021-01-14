@@ -6,6 +6,9 @@ function BossModDungeonModule.new(name, instanceId)
     self.name = name
     self.enabled = false
     self.combatLogEventDispatcher = EffusionRaidAssistCombatLogEventDispatcher()
+    self:AddEventCallback(EffusionRaidAssist.CustomEvents.InterupableSpellCast, self.InterupableSpellCast)
+    self:CombatLogEvent("SPELL_CAST_START", {}, self.SpellCastStart)
+    self:CombatLogEvent("SPELL_CAST_SUCCESS", {}, self.SpellCastSuccess)
     return self
 end
 
@@ -17,12 +20,32 @@ function BossModDungeonModule:AddEventCallback(event, callback)
     EffusionRaidAssist.EventDispatcher:AddEventCallback(event, self, callback)
 end
 
+function BossModDungeonModule:SpellCastStart(event)
+    local unitId = EffusionRaidAssist.NamePlateManager:GetUnitId(event.sourceGuid)
+    if (unitId) then
+        local _, _, texture, startTime, endTime, _, _, notInterruptible, spellId = UnitCastingInfo(unitId)
+        if (self:GetSpellInfo()[spellId]) then
+            if (not notInterruptible) then
+                local castTime = (endTime - startTime) / 1000
+                EffusionRaidAssistBossMod.NamePlateTimerManager:StartTimer(event.sourceGuid, castTime, "Interupt", texture)
+                EffusionRaidAssist.EventDispatcher:DispatchEvent(EffusionRaidAssist.CustomEvents.InterupableSpellCast, event, { id = spellId, castTime = castTime, texture = texture, cooldown = self:GetSpellInfo()[spellId].cooldown })
+            end
+        end
+    end
+end
+
+function BossModDungeonModule:SpellCastSuccess(event)
+    local spell = self:GetSpellInfo()[event.spellId]
+    if (spell and spell.cooldown) then
+        EffusionRaidAssistBossMod.NamePlateTimerManager:StartTimer(event.sourceGuid, spell.cooldown, event.spellName, GetSpellTexture(event.spellId))
+    end
+end
+
 function BossModDungeonModule:IsEnabled()
     return self.enabled
 end
 
 function BossModDungeonModule:Init()
-    self:InitDefaultTimers()
     if (self.OnInit) then
         self:OnInit()
     end

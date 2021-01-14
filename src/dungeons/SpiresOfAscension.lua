@@ -1,42 +1,20 @@
 local SpiresOfAscension = EffusionRaidAssistBossMod:NewDungeonModule("Spires of Ascension (Default)", 2285)
 
-function SpiresOfAscension:OnInit()
-
-end
-
-function SpiresOfAscension:GetUnitData()
+function SpiresOfAscension:GetSpellInfo()
     return {
-        ["Forsworn Mender"] = { 
-            id = 163459,
-            spells = {
-                ["Forsworn Doctrine"] = {
-                    id = 317936,
-                    interuptable = true,
-                    cooldown = 10,
-                }
-            }
+        [317936] = { -- Forsworn Doctrine
+            cooldown = 10,
         },
-        ["Forsworn Vanguard"] = {
-            id = 163457,
+        [327413] = {}, -- Rebellious Fist
+        [317661] = { -- Insidious Venom
+            cooldown = 4
         },
-        ["Forsworn Goliath"] = {
-            id = 168318,
-            spells = {
-                ["Rebellious Fist"] = {
-                    id = 327413,
-                    interuptable = true,
-                }
-            }
+        [328295] = { -- Greater Mending
+            cooldown = 10,
         },
-        ["Forsworn Castigator"] = {
-            id = 163458,
-            spells = {
-                ["Burden of Knowledge"] = {
-                    id = 317963,
-                    interuptable = true,
-                    cooldown = 10
-                }
-            }
-        }
+        [317963] = { -- Burden of Knowledge
+            cooldown = 10,
+        },
+        [328137] = {} -- Dark Pulse
     }
 end

@@ -7,25 +7,23 @@ function BossModNamePlateTimerManager.new()
     EffusionRaidAssistBossMod:AddEventCallback(EffusionRaidAssist.CustomEvents.TimerStarted, self, self.TimerStarted)
     EffusionRaidAssistBossMod:AddEventCallback(EffusionRaidAssist.CustomEvents.TimerEnded, self, self.TimerEnded)
     EffusionRaidAssistBossMod:AddEventCallback(EffusionRaidAssist.CustomEvents.TimerAborted, self, self.TimerEnded)
-    EffusionRaidAssist.EventDispatcher:AddEventCallback("NAME_PLATE_UNIT_ADDED", self, self.NamePlateAdded)
-    EffusionRaidAssist.EventDispatcher:AddEventCallback("NAME_PLATE_UNIT_REMOVED", self, self.NamePlateRemoved)
+    EffusionRaidAssist.EventDispatcher:AddEventCallback(EffusionRaidAssist.CustomEvents.NamePlateAdded, self, self.NamePlateAdded)
+    EffusionRaidAssist.EventDispatcher:AddEventCallback(EffusionRaidAssist.CustomEvents.NamePlateRemoved, self, self.NamePlateRemoved)
     return self
 end
 
 function BossModNamePlateTimerManager:StartTimer(guid, time, text, icon, specialIcon, callback)
-    local anchor = self:GetNameplateTimerAnchor(guid)
-    if (anchor) then
+    if (self:GetNameplateTimerAnchor(guid)) then
         local timer = EffusionRaidAssist.FramePool:GetFrame("BossModTimer")
         timer:SetIcon(icon)
         timer:SetText(text)
         timer:SetEndCallback(callback)
         timer:Start(time)
-        timer:SetPoint("BOTTOM", anchor, "TOP", 0, 0)
         if (not self.timers[guid]) then
             self.timers[guid] = {}
         end
         self.timers[guid][timer:GetName()] = timer
-        self:UpdateTimerPositions()
+        self:UpdateTimerPosition(guid)
         return timer
     end
     return nil
@@ -53,17 +51,25 @@ function BossModNamePlateTimerManager:TimerEnded(timer)
 end
 
 function BossModNamePlateTimerManager:UpdateTimerPositions()
-    for guid, indexedTimers in pairs(self.timers) do
-        local timers = table.getvalues(indexedTimers)
-        table.sort(timers, function(timer1, timer2) return timer1:GetRemainingTime() > timer2:GetRemainingTime() end)
-        local previousTimer = nil
-        for _, timer in pairs(timers) do
-            if (previousTimer == nil) then
-                timer:SetPoint("BOTTOM", self:GetNameplateTimerAnchor(guid), "TOP", 0, 1)
-            else
-                timer:SetPoint("BOTTOM", previousTimer.frame, "TOP", 0, 1)
+    for guid in pairs(self.timers) do
+        self:UpdateTimerPosition(guid)
+    end
+end
+
+function BossModNamePlateTimerManager:UpdateTimerPosition(guid)
+    if (self.timers[guid]) then
+        if (self:GetNameplateTimerAnchor(guid)) then
+            local timers = table.getvalues(self.timers[guid])
+            table.sort(timers, function(timer1, timer2) return timer1:GetRemainingTime() > timer2:GetRemainingTime() end)
+            local previousTimer = nil
+            for _, timer in pairs(timers) do
+                if (previousTimer == nil) then
+                    timer:SetPoint("BOTTOM", self:GetNameplateTimerAnchor(guid), "TOP", 0, 1)
+                else
+                    timer:SetPoint("BOTTOM", previousTimer.frame, "TOP", 0, 1)
+                end
+                previousTimer = timer
             end
-            previousTimer = timer
         end
     end
 end
@@ -74,11 +80,34 @@ function BossModNamePlateTimerManager:AbortTimersForGuid(guid)
     end
 end
 
+function BossModNamePlateTimerManager:HideTimersForGuid(guid)
+    if (self.timers[guid]) then
+        for _, timer in pairs(self.timers[guid]) do
+            timer:Hide()
+        end
+    end
+end
+
+function BossModNamePlateTimerManager:ShowTimersForGuid(guid)
+    if (self.timers[guid]) then
+        for _, timer in pairs(self.timers[guid]) do
+            timer:Show()
+        end
+    end
+end
+
+function BossModNamePlateTimerManager:NamePlateAdded(nameplate)
+    local guid = UnitGUID(nameplate)
+    self:UpdateTimerPosition(guid)
+    self:ShowTimersForGuid(guid)
+end
+
 function BossModNamePlateTimerManager:NamePlateRemoved(nameplate)
     local guid = UnitGUID(nameplate)
     local anchor = self.anchors[guid]
     if (anchor) then
-        self:AbortTimersForGuid(guid)
+        self:HideTimersForGuid(guid)
+        self.anchors[guid] = nil
         EffusionRaidAssist.FramePool:Release(anchor)
     end
 end
@@ -89,7 +118,7 @@ function BossModNamePlateTimerManager:GetNameplateTimerAnchor(guid)
         if (not self.anchors[guid]) then
             local anchor = EffusionRaidAssist.FramePool:GetFrame("Frame")
             anchor:SetParent(UIParent)
-            anchor:SetPoint("BOTTOM", EffusionRaidAssist.NamePlateManager:GetNamePlate(guid), "TOP", 0, 0)
+            anchor:SetPoint("TOP", EffusionRaidAssist.NamePlateManager:GetNamePlate(guid), "TOP", 0, 0)
             anchor:SetWidth(EffusionRaidAssistBossMod:GetData("timer.width"))
             anchor:SetHeight(EffusionRaidAssistBossMod:GetData("timer.height"))
             anchor:Hide()

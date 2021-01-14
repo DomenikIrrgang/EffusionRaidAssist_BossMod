@@ -96,13 +96,13 @@ function EffusionRaidAssistBossModTimer:End()
     if (self.endCallback) then
         self.endCallback()
     end
-    EffusionRaidAssist.FramePool:Release(self)
+    self:Release()
 end
 
 function EffusionRaidAssistBossModTimer:Abort()
     self:Stop()
     EffusionRaidAssist.EventDispatcher:DispatchEvent(EffusionRaidAssist.CustomEvents["TimerAborted"], self)
-    EffusionRaidAssist.FramePool:Release(self)
+    self:Release()
 end
 
 function EffusionRaidAssistBossModTimer:Hide()
@@ -120,6 +120,7 @@ function EffusionRaidAssistBossModTimer:Release()
     self.startTime = nil
     self.endTime = nil
     self.duration = nil
+    EffusionRaidAssist.FramePool:Release(self)
 end
 
 function EffusionRaidAssistBossModTimer:GetName()
