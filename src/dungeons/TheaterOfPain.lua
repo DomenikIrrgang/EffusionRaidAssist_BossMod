@@ -3,18 +3,26 @@ local TheaterOfPain = EffusionRaidAssistBossMod:NewDungeonModule("Theater of Pai
 function TheaterOfPain:GetSpellInfo()
     return {
         [341902] = { -- Unholy Fervor
-            purgeable = true,
+            auraApplied = {
+                purgeable = true,
+            }
         },
         [333241] = { -- Raging Tantrum
-            soothable = true,
+            auraApplied = {
+                soothable = true,
+            }
         },
         [341969] = {}, -- Withering Discharge
         [330614] = { -- Vile Eruption
-            dodge = true,
+            castStart = {
+                dodge = true,
+            }
         },
         [342139] = {}, -- Battle Trance
         [333861] = { -- Ricocheting Blade
-            spread = true,
+            castStart = {
+                spread = true,
+            }
         },
         [330562] = {} -- Demoralizing Shout
     }

@@ -8,4 +8,6 @@
     <Script file="src/DungeonModule.lua"/>
     <Script file="src/EffusionRaidAssistBossMod.lua"/>
     <Script file="src/dungeons/SpiresOfAscension.lua"/>
+    <Script file="src/dungeons/DeOtherSide.lua"/>
+    <Script file="src/dungeons/Plaeguefall.lua"/>
 </Ui>

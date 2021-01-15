@@ -5,21 +5,35 @@ function Plaeguefall:GetSpellInfo()
         [319070] = {}, -- Corrosive Gunk
         [328177] = { -- Fungistorm
             cooldown = 8,
-            ccable = true,
+            channelStart = {
+                ccable = true,
+            },
         },
         [318949] = { -- Festering Belch
-            frontal = true,
+            castStart = {
+                frontal = true,
+            },
         },
         [336451] = { -- Bulwark of Maldraxxus
             cooldown = 7,
-            ccable = true,
+            castStart = {
+                ccable = true,
+            },
+            channelStart = {
+                ccable = true,
+            },
         },
         [328395] = { -- Venompiercer
-            frontal = true
+            castStart = {
+                frontal = true
+            },
         },
         [329163] = { -- Ambush
-            ccable = true,
             cooldown = 15,
-        }
+            castStart = {
+                ccable = true,
+            },
+        },
+        -- Wonder Grow
     }
 end

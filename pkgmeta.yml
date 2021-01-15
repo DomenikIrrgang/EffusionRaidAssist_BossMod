@@ -1,0 +1,6 @@
+package-as: EffusionRaidAssist_BossMod
+enable-nolib-creation: no
+
+ignore:
+    - .vscode
+    - README.md

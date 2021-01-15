@@ -2,15 +2,21 @@ local SanguineDepths = EffusionRaidAssistBossMod:NewDungeonModule("Sanguine Dept
 
 function SanguineDepths:GetSpellInfo()
     return {
-        [334558] = { -- Corrosive Gunk
-            dodge = true,
+        [334558] = { -- Volatile Trap
+            castStart = {
+                dodge = true,
+            }
         },
         [320991] = { -- Echoing Thrust
-            frontal = true,
+            castStart = {
+                frontal = true,
+            }
         },
         [322433] = {}, -- Stoneskin
         [328170] = { -- Craggy Fracture
-            dodge = true,
+            castStart = {
+                move = true,
+            }
         },
         [321038] = {}, -- Wrack Soul
     }
