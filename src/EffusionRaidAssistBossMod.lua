@@ -42,17 +42,12 @@ function EffusionRaidAssistBossMod:GetOptions()
             func = BindCallback(self.TimerManager, self.TimerManager.ToggleAnchor),
             width = "full"
         },
-        color_full = {
-            order = 3,
-            type = "color",
-            name = "Timer Color (Full)",
-            get = function()
-                local color = self:GetData("timer.colorFull")
-                return color.red, color.green, color.blue, color.alpha
-            end,
-            set = function(_, r, g, b, a)
-                self:ChangeData("timer.colorFull", EffusionRaidAssistColor(r, g, b, a))
-            end,
+        toggle_test = {
+            order = 2,
+            type = "execute",
+            name = "Start Test Timers",
+            func = BindCallback(self.TimerManager, self.TimerManager.CreateTestTimers),
+            width = "full"
         },
         color_empty = {
             order = 2,
@@ -66,8 +61,40 @@ function EffusionRaidAssistBossMod:GetOptions()
                 self:ChangeData("timer.colorEmpty", EffusionRaidAssistColor(r, g, b, a))
              end,
         },
-        timer_width = {
+        color_full = {
+            order = 3,
+            type = "color",
+            name = "Timer Color (Full)",
+            get = function()
+                local color = self:GetData("timer.colorFull")
+                return color.red, color.green, color.blue, color.alpha
+            end,
+            set = function(_, r, g, b, a)
+                self:ChangeData("timer.colorFull", EffusionRaidAssistColor(r, g, b, a))
+            end,
+        },
+        growthDirection = {
             order = 4,
+            name = "Growth Direction",
+            width = "full",
+            desc = "Direction timers are going to.",
+            type = "select",
+            get = function()
+                local directions = { "UP", "DOWN" }
+                for k, v in pairs(directions) do
+                    if (v == self:GetData("timer.growthDirection")) then
+                        return k
+                    end
+                end
+            end,
+            set = function(_, value)
+                local directions = { "UP", "DOWN" }
+                self:ChangeData("timer.growthDirection", directions[value])
+            end,
+            values = { "UP", "DOWN" },
+        },
+        timer_width = {
+            order = 5,
             type = "range",
             name = "Width",
             get = self:OptionsGetter("timer.width"),
@@ -78,7 +105,7 @@ function EffusionRaidAssistBossMod:GetOptions()
             width = "full"
         },
         timer_height = {
-            order = 5,
+            order = 6,
             type = "range",
             name = "Height",
             get = self:OptionsGetter("timer.height"),
@@ -102,6 +129,7 @@ function EffusionRaidAssistBossMod:GetDefaultSettings()
             },
             width = 250,
             height = 20,
+            growthDirection = "UP",
         }
     }
 end

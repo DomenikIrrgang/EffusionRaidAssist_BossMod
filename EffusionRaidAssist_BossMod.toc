@@ -1,4 +1,4 @@
-## Interface: 90002
+## Interface: 11306
 ## Author: Suu
 ## Title: EffusionRaidAssist [|c0000FF00BossMod|r]
 ## Notes: BossMod for EffusionRaidAssist.

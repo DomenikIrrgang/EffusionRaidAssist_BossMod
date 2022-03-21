@@ -167,8 +167,10 @@ function EffusionRaidAssistBossModTimer:SetRemainingTime(value)
 end
 
 function EffusionRaidAssistBossModTimer:UpdateBarColor()
-    self.barColor:Interpolate(EffusionRaidAssistBossMod:GetData().timer.colorEmpty, EffusionRaidAssistBossMod:GetData().timer.colorFull, self:GetPercentage())
-    self:SetBarColor(self.barColor)
+    if (self.active) then
+        self.barColor:Interpolate(EffusionRaidAssistBossMod:GetData().timer.colorEmpty, EffusionRaidAssistBossMod:GetData().timer.colorFull, self:GetPercentage())
+        self:SetBarColor(self.barColor)
+    end
 end
 
 function EffusionRaidAssistBossModTimer:GetRemainingTime()

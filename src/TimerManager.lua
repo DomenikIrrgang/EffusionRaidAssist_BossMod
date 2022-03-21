@@ -56,10 +56,19 @@ function BossModTimerManager:UpdateTimerPositions()
     table.sort(timers, function(timer1, timer2) return timer1:GetRemainingTime() > timer2:GetRemainingTime() end)
     local previousTimer = nil
     for _, timer in pairs(timers) do
-        if (previousTimer == nil) then
-            timer:SetPoint("TOP", self.anchor, "BOTTOM", 0, -1)
+        timer.frame:ClearAllPoints()
+        if (EffusionRaidAssistBossMod:GetData("timer.growthDirection") == "DOWN") then
+            if (previousTimer == nil) then
+                timer:SetPoint("TOP", self.anchor, "TOP", 0, 0)
+            else
+                timer:SetPoint("TOP", previousTimer.frame, "BOTTOM", 0, -1)
+            end
         else
-            timer:SetPoint("TOP", previousTimer.frame, "BOTTOM", 0, -1)
+            if (previousTimer == nil) then
+                timer:SetPoint("BOTTOM", self.anchor, "BOTTOM", 0, 0)
+            else
+                timer:SetPoint("BOTTOM", previousTimer.frame, "TOP", 0, 1)
+            end
         end
         previousTimer = timer
     end
@@ -82,7 +91,7 @@ end
 function BossModTimerManager:CreateTimerAnchor()
     local anchor = EffusionRaidAssist.FramePool:GetFrame("Frame")
     anchor:SetParent(UIParent)
-    anchor:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    anchor:SetPoint("CENTER", UIParent, "CENTER", EffusionRaidAssistBossMod:GetData("timer.anchor_position_offset.x"), EffusionRaidAssistBossMod:GetData("timer.anchor_position_offset.y"))
     anchor:SetWidth(EffusionRaidAssistBossMod:GetData("timer.width"))
     anchor:SetHeight(EffusionRaidAssistBossMod:GetData("timer.height"))
     anchor:SetMovable(true)
@@ -113,4 +122,10 @@ function BossModTimerManager:CreateTimerAnchor()
     anchor.text:SetText("Anchor")
     anchor:Hide()
     return anchor
+end
+
+function BossModTimerManager:CreateTestTimers()
+    for i = 1, 10 do
+        self:StartTimer(i, "Test Timer", GetSpellTexture(1535))
+    end
 end

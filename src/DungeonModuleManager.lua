@@ -24,7 +24,7 @@ function BossModDungeonModuleManager:EnterDungeon(dungeon)
         end
         EffusionRaidAssistBossMod:ChatMessage("Activated Module(s) for Dungeon:", dungeon.name)
     else
-        EffusionRaidAssistBossMod:ChatMessage("No Module found for Dungeon:", dungeon.name)
+        EffusionRaidAssistBossMod:ChatMessage("No Module found for Dungeon:", dungeon.name, dungeon.instanceId)
     end
 end
 
