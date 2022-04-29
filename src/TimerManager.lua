@@ -10,6 +10,8 @@ function BossModTimerManager.new()
     EffusionRaidAssistBossMod:AddEventCallback(EffusionRaidAssist.CustomEvents.ProfileChanged, self, self.InitAnchor)
     EffusionRaidAssistBossMod:RegisterDataCallback("timer.width", BindCallback(self, self.SetAnchorWidth))
     EffusionRaidAssistBossMod:RegisterDataCallback("timer.height", BindCallback(self, self.SetAnchorHeight))
+    EffusionRaidAssistBossMod:RegisterDataCallback("timer.anchor_position_offset.x", BindCallback(self, self.SetAnchorPositionX))
+    EffusionRaidAssistBossMod:RegisterDataCallback("timer.anchor_position_offset.y", BindCallback(self, self.SetAnchorPositionY))
     return self
 end
 
@@ -79,7 +81,6 @@ function BossModTimerManager:InitAnchor()
     self.anchor:SetWidth(EffusionRaidAssistBossMod:GetData("timer.width"))
 end
 
-
 function BossModTimerManager:SetAnchorWidth(width)
     self.anchor:SetWidth(width)
 end
@@ -88,23 +89,32 @@ function BossModTimerManager:SetAnchorHeight(height)
     self.anchor:SetHeight(height)
 end
 
+function BossModTimerManager:SetAnchorPositionX(position_x)
+    self.anchor:SetPoint("CENTER", UIParent, "CENTER", position_x, EffusionRaidAssistBossMod:GetData("timer.anchor_position_offset.y"))
+end
+
+function BossModTimerManager:SetAnchorPositionY(position_y)
+    self.anchor:SetPoint("CENTER", UIParent, "CENTER", EffusionRaidAssistBossMod:GetData("timer.anchor_position_offset.x"), position_y)
+end
+
 function BossModTimerManager:CreateTimerAnchor()
     local anchor = EffusionRaidAssist.FramePool:GetFrame("Frame")
     anchor:SetParent(UIParent)
     anchor:SetPoint("CENTER", UIParent, "CENTER", EffusionRaidAssistBossMod:GetData("timer.anchor_position_offset.x"), EffusionRaidAssistBossMod:GetData("timer.anchor_position_offset.y"))
+    --anchor:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
     anchor:SetWidth(EffusionRaidAssistBossMod:GetData("timer.width"))
     anchor:SetHeight(EffusionRaidAssistBossMod:GetData("timer.height"))
     anchor:SetMovable(true)
     anchor:SetScript("OnMouseDown", function()
         if (anchor:IsShown()) then
-            anchor:SetMovable(true)
-            anchor:StartMoving()
+            --anchor:SetMovable(true)
+            --anchor:StartMoving()
         end
     end)
 
     anchor:SetScript("OnMouseUp", function()
-        anchor:StopMovingOrSizing()
-        anchor:SetMovable(false)
+        --anchor:StopMovingOrSizing()
+        --anchor:SetMovable(false)
     end)
 
     anchor.background = EffusionRaidAssist.FramePool:GetTexture("BACKGROUND")

@@ -114,6 +114,28 @@ function EffusionRaidAssistBossMod:GetOptions()
             min = 15,
             max = 50,
             width = "full"
+        },
+        timer_position_x = {
+            order = 7,
+            type = "range",
+            name = "X-Position",
+            get = self:OptionsGetter("timer.anchor_position_offset.x"),
+            set = self:OptionsSetter("timer.anchor_position_offset.x"),
+            step = 1,
+            min = -1500,
+            max = 1500,
+            width = "full"
+        },
+        timer_position_y = {
+            order = 8,
+            type = "range",
+            name = "Y-Position",
+            get = self:OptionsGetter("timer.anchor_position_offset.y"),
+            set = self:OptionsSetter("timer.anchor_position_offset.y"),
+            step = 1,
+            min = -1500,
+            max = 1500,
+            width = "full"
         }
     }
 end
