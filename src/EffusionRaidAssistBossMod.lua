@@ -39,7 +39,14 @@ function EffusionRaidAssistBossMod:GetOptions()
             order = 1,
             type = "execute",
             name = "Toggle Anchor",
-            func = BindCallback(self.TimerManager, self.TimerManager.ToggleAnchor),
+            func = function()
+                self.TimerManager:ToggleAnchor()
+                point, _, relativePoint, xOffset, yOffset = self.TimerManager:GetAnchor():GetPoint()
+                self:ChangeData("timer.anchor.point", point)
+                self:ChangeData("timer.anchor.relativePoint", relativePoint)
+                self:ChangeData("timer.anchor.offset.x", xOffset)
+                self:ChangeData("timer.anchor.offset.y", yOffset)
+            end,
             width = "full"
         },
         toggle_test = {
@@ -123,9 +130,13 @@ function EffusionRaidAssistBossMod:GetDefaultSettings()
         timer = {
             colorFull = EffusionRaidAssistColor(0, 0.7, 1, 1):ToObject(),
             colorEmpty = EffusionRaidAssistColor(1, 0, 0, 1):ToObject(),
-            anchor_position_offset = {
-                x = 0,
-                y = 0,
+            anchor = {
+                point = "CENTER",
+                relativePoint = "CENTER",
+                offset = {
+                    x = 0,
+                    y = 0,
+                },
             },
             width = 250,
             height = 20,

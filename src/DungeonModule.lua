@@ -5,6 +5,7 @@ function BossModDungeonModule.new(name, instanceId)
     self.instanceId = instanceId
     self.name = name
     self.enabled = false
+    self.encounterModules = {}
     self.combatLogEventDispatcher = EffusionRaidAssistCombatLogEventDispatcher()
     self:AddEventCallback(EffusionRaidAssist.CustomEvents.InterupableSpellCast, self.InterupableSpellCast)
     self:CombatLogEvent("SPELL_CAST_START", {}, self.SpellCastStart)
@@ -173,4 +174,39 @@ function BossModDungeonModule:Deactivate()
     if (self.OnDeactivate) then
         self:OnDeactivate()
     end
+end
+
+function BossModDungeonModule:GetEncounterModules()
+    return self.encounterModules
+end
+
+function BossModDungeonModule:GetEnabledModules()
+    local result = {}
+    for _, module in pairs(self:GetEncounterModules()) do
+        if (module:IsEnabled()) then
+            table.insert(result, module)
+        end
+    end
+    return result
+end
+
+function BossModDungeonModule:GetModulesByInstanceId(instanceId)
+    local modules = {}
+    for _, module in pairs(self:GetEncounterModules()) do
+        if module.instanceId == instanceId then
+            table.insert(modules, module)
+        end
+    end
+    return modules
+end
+
+function BossModDungeonModule:NewEncounterModule(name, encounterId)
+    local newModule = BossModEncounterModule(name, encounterId)
+    self:AddModule(newModule)
+    return newModule
+end
+
+function BossModDungeonModule:AddEncounterModule(module)
+    module.id = #self.modules
+    table.insert(self.modules, module)
 end

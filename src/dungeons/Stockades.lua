@@ -2,7 +2,7 @@ local Stockades = EffusionRaidAssistBossMod:NewDungeonModule("De Other Side (Def
 
 function Stockades:GetSpellInfo()
     return {
-        [6713] = { -- Sin Quake
+        [6713] = {
             castSuccess = {
                 move = true
             },

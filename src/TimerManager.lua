@@ -91,7 +91,12 @@ end
 function BossModTimerManager:CreateTimerAnchor()
     local anchor = EffusionRaidAssist.FramePool:GetFrame("Frame")
     anchor:SetParent(UIParent)
-    anchor:SetPoint("CENTER", UIParent, "CENTER", EffusionRaidAssistBossMod:GetData("timer.anchor_position_offset.x"), EffusionRaidAssistBossMod:GetData("timer.anchor_position_offset.y"))
+    anchor:SetPoint(
+        EffusionRaidAssistBossMod:GetData("timer.anchor.point"),
+        "UIParent",
+        EffusionRaidAssistBossMod:GetData("timer.anchor.relativePoint"),
+        EffusionRaidAssistBossMod:GetData("timer.anchor.offset.x"),
+        EffusionRaidAssistBossMod:GetData("timer.anchor.offset.y"))
     anchor:SetWidth(EffusionRaidAssistBossMod:GetData("timer.width"))
     anchor:SetHeight(EffusionRaidAssistBossMod:GetData("timer.height"))
     anchor:SetMovable(true)
@@ -122,6 +127,10 @@ function BossModTimerManager:CreateTimerAnchor()
     anchor.text:SetText("Anchor")
     anchor:Hide()
     return anchor
+end
+
+function BossModTimerManager:GetAnchor()
+    return self.anchor
 end
 
 function BossModTimerManager:CreateTestTimers()
