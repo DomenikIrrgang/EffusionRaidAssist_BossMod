@@ -111,14 +111,14 @@ function BossModTimerManager:CreateTimerAnchor()
     anchor:SetMovable(true)
     anchor:SetScript("OnMouseDown", function()
         if (anchor:IsShown()) then
-            --anchor:SetMovable(true)
-            --anchor:StartMoving()
+            anchor:SetMovable(true)
+            anchor:StartMoving()
         end
     end)
 
     anchor:SetScript("OnMouseUp", function()
-        --anchor:StopMovingOrSizing()
-        --anchor:SetMovable(false)
+        anchor:StopMovingOrSizing()
+        anchor:SetMovable(false)
     end)
 
     anchor.background = EffusionRaidAssist.FramePool:GetTexture("BACKGROUND")

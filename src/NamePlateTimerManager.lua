@@ -30,7 +30,7 @@ function BossModNamePlateTimerManager:StartTimer(guid, time, text, icon, special
 end
 
 function BossModNamePlateTimerManager:StartTimerForSpell(guid, time, spellId, text, specialIcon, callback)
-    return self:StartTimer(guid, time, text or GetSpellInfo(spellId), 1, specialIcon, callback)
+    return self:StartTimer(guid, time, text or GetSpellInfo(spellId), GetSpellTexture(spellId), specialIcon, callback)
 end
 
 function BossModNamePlateTimerManager:Clear()
