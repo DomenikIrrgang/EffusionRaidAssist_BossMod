@@ -6,6 +6,8 @@ function BossModDungeonModuleManager.new()
     self.activeModules = {}
     EffusionRaidAssistBossMod:AddEventCallback(EffusionRaidAssist.CustomEvents.DungeonEntered, self, self.EnterDungeon)
     EffusionRaidAssistBossMod:AddEventCallback(EffusionRaidAssist.CustomEvents.DungeonLeft, self, self.LeaveDungeon)
+    EffusionRaidAssistBossMod:AddEventCallback("PLAYER_ENTERING_WORLD", self, self.PlayerEnteringWorld)
+
     return self
 end
 
@@ -15,12 +17,21 @@ function BossModDungeonModuleManager:Init()
     end
 end
 
+function BossModDungeonModuleManager:PlayerEnteringWorld()
+    local modules = self:GetModulesByInstanceId(-1)
+    if (#modules > 0) then
+        for _, module in pairs(modules) do
+            self:LoadModule(module)
+            EffusionRaidAssistBossMod:ChatMessage("Activated global Module:", module.name)
+        end
+    end
+end
+
 function BossModDungeonModuleManager:EnterDungeon(dungeon)
     local modules = self:GetModulesByInstanceId(dungeon.instanceId)
     if (#modules > 0) then
         for _, module in pairs(modules) do
-            module:Activate()
-            self.activeModules[module.name] = module
+            self:LoadModule(module)
         end
         EffusionRaidAssistBossMod:ChatMessage("Activated Module(s) for Dungeon:", dungeon.name)
     else
@@ -32,8 +43,7 @@ function BossModDungeonModuleManager:LeaveDungeon(dungeon)
     local modules = self:GetModulesByInstanceId(dungeon.instanceId)
     if (#modules > 0) then
         for _, module in pairs(modules) do
-            module:Deactivate()
-            self.activeModules[module.name] = nil
+            self:UnloadModule(module)
         end
         EffusionRaidAssistBossMod:ChatMessage("Deactivated Module(s) for Dungeon:", dungeon.name)
     end
@@ -51,6 +61,16 @@ function BossModDungeonModuleManager:GetEnabledModules()
         end
     end
     return result
+end
+
+function BossModDungeonModuleManager:LoadModule(module)
+    module:Activate()
+    self.activeModules[module.name] = module
+end
+
+function BossModDungeonModuleManager:UnloadModule(module)
+    module:Deactivate()
+    self.activeModules[module.name] = nil
 end
 
 function BossModDungeonModuleManager:GetModulesByInstanceId(instanceId)
